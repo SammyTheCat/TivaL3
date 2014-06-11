@@ -13,5 +13,24 @@ uint8_t ui8PinData=2;         // unsigned 8-bit int like char in monkeystyle C I
 
 int main(void) {
 	
-	return 0;
+	// setting clock source, dividers, frequency...
+	SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);
+
+	// we must enable clock for PortF before using it and there is a delay of 3 to 6 cycles
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+	// set pins 1,2,3 in PORTF as outputs
+	GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
+
+    while(1){
+
+    	// delay for 3 cycles 2000000 times: 1/40`000`000 * 3 * 2000000 = 0.15 seconds
+    	SysCtlDelay(2000000);
+    	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, ui8PinData);
+    	SysCtlDelay(2000000);
+    	if(ui8PinData == 8){
+    		ui8PinData = 2;
+    	}else{
+    		ui8PinData*=2;
+    	}
+    }
 }
